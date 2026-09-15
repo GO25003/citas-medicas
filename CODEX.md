@@ -45,14 +45,25 @@ Además, `docs/` está versionado mediante `.gitkeep` y reservado para diagramas
 ## Dominio actual
 
 - `Persona`: clase abstracta `@MappedSuperclass` con `idPersona`, nombre, apellido, email y teléfono.
-- `Medico`: hereda de `Persona`, tiene especialidad y número de colegiado.
-- `Paciente`: hereda de `Persona`, tiene fecha de nacimiento.
+- `Medico`: hereda de `Persona`, tiene número de colegiado, una o más especialidades y sus disponibilidades.
+- `Paciente`: hereda de `Persona`, tiene fecha de nacimiento e historial de citas.
 - `Especialidad`: catálogo de especialidades médicas.
 - `Disponibilidad`: franja de un médico (`LocalDate`, `LocalTime` de inicio/fin).
-- `Cita`: relaciona médico y paciente, con `LocalDateTime`, motivo y estado.
+- `Cita`: relaciona médico, paciente y especialidad; registra inicio (`LocalDateTime`), duración en minutos, motivo y estado.
 - `EstadoCita`: `PENDIENTE`, `CONFIRMADA`, `CANCELADA`.
 
 Las relaciones `@ManyToOne` son `LAZY`. El estado de una cita se persiste con `@Enumerated(EnumType.STRING)`.
+
+`Medico` y `Especialidad` se relacionan mediante `@ManyToMany`. Las colecciones inversas de disponibilidades e historial de citas usan `@OneToMany(mappedBy = ...)`.
+
+## Reglas de negocio acordadas
+
+- La especialidad solicitada en una cita debe pertenecer al médico.
+- El intervalo `[fechaHoraInicio, fechaHoraInicio + duracionMinutos]` debe estar contenido en una disponibilidad del médico.
+- No puede existir otra cita `PENDIENTE` o `CONFIRMADA` del mismo médico cuyo intervalo se cruce con el de la nueva cita.
+- Cancelar una cita cambia su estado a `CANCELADA`; no se elimina físicamente para conservar trazabilidad.
+
+Estas reglas aún deben implementarse en `CitaServiceImpl` cuando se definan los DTOs y endpoints.
 
 ## Estado de la plantilla
 

@@ -9,7 +9,16 @@ Backend para la gestión centralizada de pacientes, médicos, especialidades, di
 - Agendamiento, confirmación y cancelación de citas.
 - Seguimiento del estado de una cita: `PENDIENTE`, `CONFIRMADA` o `CANCELADA`.
 
-El modelo de dominio incluye las entidades `Medico`, `Paciente`, `Especialidad`, `Disponibilidad` y `Cita`. Las fechas y horas se representan con las clases de `java.time` para evitar ambigüedades de formato y zona horaria.
+El modelo de dominio incluye las entidades `Medico`, `Paciente`, `Especialidad`, `Disponibilidad` y `Cita`. Un médico puede ejercer una o más especialidades; una cita indica la especialidad solicitada, su hora de inicio y su duración. Las fechas y horas se representan con las clases de `java.time` para evitar ambigüedades de formato y zona horaria.
+
+## Reglas de negocio
+
+- Una cita solo puede solicitarse para una especialidad asignada al médico seleccionado.
+- La hora de inicio y el intervalo completo de la cita deben estar dentro de una disponibilidad vigente del médico.
+- Un médico no puede tener citas `PENDIENTE` o `CONFIRMADA` con intervalos de tiempo que se crucen.
+- La cancelación se representa mediante el estado `CANCELADA`, preservando el historial de la cita.
+
+Estas validaciones forman parte de la lógica de servicio y serán aplicadas al implementar las operaciones de agendamiento y reprogramación.
 
 ## Arquitectura y tecnologías
 
@@ -73,7 +82,7 @@ Los controladores base y sus prefijos están creados, pero todavía no contienen
 
 ## Estado de la plantilla
 
-El repositorio incluye esqueletos compilables de controladores, servicios, implementaciones de servicio, repositorios JPA, DTOs y mappers MapStruct. Los DTOs y mappers aún no definen campos ni conversiones, y los servicios todavía no contienen reglas de negocio. Esta estructura permite que cada contribución se incorpore en su capa correspondiente sin redefinir la organización del proyecto.
+El repositorio incluye esqueletos compilables de controladores, servicios, implementaciones de servicio, repositorios JPA, DTOs y mappers MapStruct. Los DTOs y mappers aún no definen campos ni conversiones, y los servicios todavía no aplican las reglas de negocio descritas arriba. Esta estructura permite que cada contribución se incorpore en su capa correspondiente sin redefinir la organización del proyecto.
 
 ## Desarrollo
 
