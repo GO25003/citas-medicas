@@ -1,0 +1,88 @@
+@startuml SistemaCitasMedicas
+
+' ===================== CLASE ABSTRACTA =====================
+abstract class Persona {
+  #idPersona: int
+  #nombre: String
+  #apellido: String
+  #email: String
+  #telefono: String
+  +getNombreCompleto(): String
+  +getDatosContacto(): String
+  {abstract} +mostrarInfo(): String
+}
+
+' ===================== HERENCIA =====================
+class Medico extends Persona {
+  -numeroColegiado: String
+  -especialidades: List<Especialidad>
+  -disponibilidades: List<Disponibilidad>
+  +agregarEspecialidad(esp: Especialidad): void
+  +tieneEspecialidad(idEsp: int): boolean
+  +getDisponibilidad(fecha: Date): List<Disponibilidad>
+  +estaDisponible(fecha: Date, hora: Time): boolean
+  +mostrarInfo(): String
+}
+
+class Paciente extends Persona {
+  -fechaNacimiento: LocalDate
+  -historialCitas: List<Cita>
+  +getHistorialCitas(): List<Cita>
+  +mostrarInfo(): String
+}
+
+' ===================== CLASES ASOCIADAS =====================
+class Especialidad {
+  -idEspecialidad: int
+  -nombre: String
+  -descripcion: String
+  +getNombre(): String
+}
+
+class Cita {
+  -idCita: int
+  -medico: Medico
+  -paciente: Paciente
+  -especialidadConsulta: Especialidad
+  -fechaHoraInicio: LocalDateTime
+  -duracionMinutos: int
+  -motivo: String
+  -estado: EstadoCita
+  +validarDisponibilidad(): boolean
+  +validarEspecialidad(): boolean
+  +getFechaHoraFin(): LocalDateTime
+  +confirmar(): void
+  +cancelar(): void
+  +reprogramar(nuevaFechaHora: LocalDateTime): boolean
+}
+
+class Disponibilidad {
+  -idDisponibilidad: int
+  -fecha: Date
+  -horaInicio: Time
+  -horaFin: Time
+  -disponible: boolean
+  +marcarComoOcupado(): void
+  +liberar(): void
+  +estaEnRango(hora: Time): boolean
+}
+
+enum EstadoCita {
+  PENDIENTE
+  CONFIRMADA
+  CANCELADA
+}
+
+' ===================== RELACIONES =====================
+Persona <|-- Medico
+Persona <|-- Paciente
+
+Medico "0..*" -- "1..*" Especialidad : posee >
+Medico "1" *-- "0..*" Disponibilidad : gestiona >
+Medico "1" -- "0..*" Cita : atiende >
+Paciente "1" -- "0..*" Cita : solicita >
+Cita "0..*" -- "1" Especialidad : corresponde a >
+Cita ..> Disponibilidad : valida rango >
+Cita -- EstadoCita
+
+@enduml
