@@ -3,6 +3,7 @@ package com.clinica.citas.model;
 import java.time.LocalDateTime;
 
 import com.clinica.citas.model.enums.EstadoCita;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,7 +37,16 @@ public class Cita {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
-    private LocalDateTime fechaHora;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "especialidad_id", nullable = false)
+    private Especialidad especialidadConsulta;
+
+    @Column(nullable = false)
+    private LocalDateTime fechaHoraInicio;
+
+    @Column(nullable = false)
+    private Integer duracionMinutos;
+
     private String motivo;
 
     @Enumerated(EnumType.STRING)
