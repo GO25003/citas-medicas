@@ -29,16 +29,18 @@ mvn -Dmaven.repo.local=/tmp/citas-medicas-m2 clean compile
 
 ```text
 src/main/java/com/clinica/citas/
-├── controller/       # Endpoints REST
+├── controller/       # Controladores REST base; aún sin métodos HTTP
 ├── service/impl/     # Interfaces y sus implementaciones
 ├── repository/       # Repositorios Spring Data JPA
 ├── model/            # Entidades JPA
 │   └── enums/        # Enumeraciones del dominio
-├── dto/request/      # Payloads de entrada validados
-├── dto/response/     # Respuestas de la API
-├── mapper/           # Interfaces MapStruct
+├── dto/request/      # DTOs de entrada; contratos aún por definir
+├── dto/response/     # DTOs de salida; contratos aún por definir
+├── mapper/           # Interfaces MapStruct; conversiones aún por definir
 └── exception/        # Excepciones y manejo global HTTP
 ```
+
+Además, `docs/` está versionado mediante `.gitkeep` y reservado para diagramas UML y Entidad-Relación.
 
 ## Dominio actual
 
@@ -52,11 +54,19 @@ src/main/java/com/clinica/citas/
 
 Las relaciones `@ManyToOne` son `LAZY`. El estado de una cita se persiste con `@Enumerated(EnumType.STRING)`.
 
+## Estado de la plantilla
+
+- Hay controladores base para médico, paciente, cita y especialidad. Tienen prefijos `/api/...`, pero no métodos HTTP implementados.
+- Los servicios e implementaciones de médico, paciente, cita y especialidad son contratos/esqueletos sin reglas de negocio todavía.
+- Los repositorios JPA de médico, paciente, cita, especialidad y disponibilidad ya extienden `JpaRepository`.
+- Los DTOs y mappers son esqueletos compilables. Añadir campos, restricciones y métodos de conversión junto con el contrato de cada endpoint.
+- `GlobalExceptionHandler` responde validaciones como 400, `BadRequestException` como 400 y `ResourceNotFoundException` como 404. Las excepciones no controladas responden 500.
+
 ## Convenciones importantes
 
 - **No usar `@Data` en entidades JPA.** Usar `@Getter`, `@Setter`, `@NoArgsConstructor` y `@AllArgsConstructor`; evita ciclos en `toString`, `equals` y `hashCode` por relaciones JPA.
 - Mantener entidades en `model`, sin exponerlas directamente desde controladores. Crear DTOs para requests y responses.
-- Validar los DTOs de entrada con anotaciones `jakarta.validation` y `@Valid` en el controlador.
+- Al definir DTOs de entrada, validarlos con anotaciones `jakarta.validation` y `@Valid` en el controlador.
 - Declarar transformaciones en interfaces de `mapper` con `@Mapper(componentModel = "spring")`.
 - Los procesadores Lombok, MapStruct y `lombok-mapstruct-binding` ya están configurados en `pom.xml`; no retirar esa configuración.
 - Centralizar errores HTTP en `GlobalExceptionHandler`; conservar el contrato `ErrorDetails` para errores de API.

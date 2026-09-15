@@ -34,7 +34,7 @@ Las entidades JPA no utilizan `@Data`, evitando efectos no deseados en relacione
 
 ## Diagramas
 
-Los diagramas UML y Entidad-Relación se incorporarán en `docs/` cuando estén disponibles. El modelo implementado corresponde a la estructura descrita en la sección de alcance funcional.
+El directorio `docs/` ya está incluido en el repositorio y está reservado para los diagramas UML y Entidad-Relación. El modelo implementado corresponde a la estructura descrita en la sección de alcance funcional.
 
 ## Requisitos
 
@@ -58,9 +58,9 @@ mvn clean compile
 mvn spring-boot:run
 ```
 
-## Rutas API previstas
+## Estado de la API
 
-La estructura de controladores está preparada, pero los endpoints aún no se han implementado. Las rutas iniciales previstas son:
+Los controladores base y sus prefijos están creados, pero todavía no contienen métodos HTTP; por tanto, **ninguna ruta expone operaciones funcionales**. Las siguientes son las rutas previstas para la implementación:
 
 | Método | Ruta | Propósito |
 |---|---|---|
@@ -69,6 +69,11 @@ La estructura de controladores está preparada, pero los endpoints aún no se ha
 | `GET` | `/api/medicos/{id}/disponibilidad` | Consultar la disponibilidad de un médico. |
 | `POST` | `/api/medicos` | Registrar un médico. |
 | `POST` | `/api/pacientes` | Registrar un paciente. |
+| `POST` | `/api/especialidades` | Registrar una especialidad. |
+
+## Estado de la plantilla
+
+El repositorio incluye esqueletos compilables de controladores, servicios, implementaciones de servicio, repositorios JPA, DTOs y mappers MapStruct. Los DTOs y mappers aún no definen campos ni conversiones, y los servicios todavía no contienen reglas de negocio. Esta estructura permite que cada contribución se incorpore en su capa correspondiente sin redefinir la organización del proyecto.
 
 ## Desarrollo
 
