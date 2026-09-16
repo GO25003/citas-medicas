@@ -73,6 +73,34 @@ Estas reglas aún deben implementarse en `CitaServiceImpl` cuando se definan los
 - Los DTOs y mappers son esqueletos compilables. Añadir campos, restricciones y métodos de conversión junto con el contrato de cada endpoint.
 - `GlobalExceptionHandler` responde validaciones como 400, `BadRequestException` como 400 y `ResourceNotFoundException` como 404. Las excepciones no controladas responden 500.
 
+## Fuente de verdad y responsabilidades
+
+- El UML define el modelo conceptual y las relaciones del dominio.
+
+- La arquitectura por capas define dónde se implementan las operaciones de la aplicación.
+
+- Los métodos mostrados en el UML representan responsabilidades del dominio,
+pero su implementación debe respetar la separación de capas del proyecto.
+
+- Las operaciones que requieran acceso a repositorios, validaciones entre
+múltiples entidades o coordinación de casos de uso deben implementarse
+en la capa Service.
+
+- No mover lógica entre capas únicamente para hacer coincidir literalmente
+el código con la firma de un método del UML.
+
+## Regla para agentes de IA
+
+Antes de crear una clase, interfaz, dependencia, paquete o patrón nuevo:
+
+- 1. Revisar si ya existe una solución equivalente.
+- 2. Revisar README.md, CODEX.md y docs/UML.puml.
+- 3. Mantener la arquitectura existente.
+- 4. No introducir patrones adicionales sin necesidad.
+- 5. No modificar el UML para justificar una implementación.
+- 6. Si existe una contradicción entre documentación y código, señalarla
+   antes de realizar cambios estructurales.
+
 ## Convenciones importantes
 
 - **No usar `@Data` en entidades JPA.** Usar `@Getter`, `@Setter`, `@NoArgsConstructor` y `@AllArgsConstructor`; evita ciclos en `toString`, `equals` y `hashCode` por relaciones JPA.
