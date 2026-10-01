@@ -110,6 +110,46 @@ Antes de crear una clase, interfaz, dependencia, paquete o patrón nuevo:
 - Los procesadores Lombok, MapStruct y `lombok-mapstruct-binding` ya están configurados en `pom.xml`; no retirar esa configuración.
 - Centralizar errores HTTP en `GlobalExceptionHandler`; conservar el contrato `ErrorDetails` para errores de API.
 
+## Contenerización y entorno de desarrollo
+
+- Ejecutar la aplicación mediante Docker Compose desde el inicio del desarrollo.
+- Contenerizar la aplicación Spring Boot y la base de datos.
+- Cualquier integrante debe poder clonar el repositorio y levantar el sistema completo con `docker compose up --build`.
+- No depender de instalaciones locales específicas de Java, Maven o base de datos.
+- Mantener un entorno reproducible entre integrantes.
+
+### Configuración
+
+- Manejar toda configuración sensible mediante variables de entorno.
+- Nunca guardar credenciales reales dentro del código ni subir archivos `.env` al repositorio.
+- Mantener un archivo `.env.example` con las variables requeridas y actualizar `.gitignore` para excluir archivos sensibles.
+
+### Base de datos
+
+- Seguir únicamente el diagrama ER aprobado dentro de `docs/` para la estructura de la base de datos.
+- Versionar dentro del repositorio los scripts de creación e inicialización de la base de datos.
+- No crear tablas, columnas ni relaciones que no estén documentadas.
+
+### Docker
+
+- Mantener un `Dockerfile` para la aplicación Spring Boot y `docker-compose.yml` como punto único para levantar aplicación y base de datos.
+- No agregar configuraciones Docker innecesarias.
+- Asegurar que los cambios funcionen dentro del entorno contenerizado.
+
+### Maven y validaciones
+
+- Docker no reemplaza las validaciones Maven.
+- Antes de entregar cambios, ejecutar `./mvnw clean compile` y verificar pruebas con `./mvnw test`.
+- Antes de finalizar cambios, ejecutar `docker compose up --build` y confirmar que la aplicación inicia correctamente dentro del entorno contenerizado.
+
+### Reglas para agentes de IA
+
+- Antes de modificar código, revisar `CODEX.md`, `README.md`, `docs/` y el código existente relacionado.
+- No crear tecnologías, dependencias o patrones sin aprobación.
+- No modificar nombres de entidades, atributos o relaciones definidos en UML/ER.
+- No cambiar la estructura de carpetas sin necesidad.
+- Priorizar soluciones simples, mantenibles y compatibles con la arquitectura existente.
+
 ## Antes de entregar cambios
 
 1. Ejecutar `mvn clean compile`.
