@@ -27,7 +27,7 @@ public class Disponibilidad {
     private Long idDisponibilidad;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "medico_id", nullable = false)
+    @JoinColumn(name = "id_medico", nullable = false)
     private Medico medico;
 
     private LocalDate fecha;
