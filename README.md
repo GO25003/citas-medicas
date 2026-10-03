@@ -47,9 +47,31 @@ El directorio `docs/` ya está incluido en el repositorio y está reservado para
 
 ## Requisitos
 
-- JDK 25.
-- Maven 3.9 o superior, o el Maven Wrapper incluido en el repositorio.
-- Una base de datos compatible con JPA cuando se habilite la configuración de persistencia del entorno.
+- Docker Engine y Docker Compose.
+- Para compilar o ejecutar fuera de Docker: JDK 25 y Maven 3.9 o el Maven Wrapper incluido.
+
+## Entorno con Docker Compose
+
+La forma recomendada de levantar el entorno de desarrollo es ejecutar desde la raíz del repositorio:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+El archivo `.env` contiene la configuración local de conexión y está excluido de Git. `.env.example` contiene valores de ejemplo; se pueden ajustar en `.env`. Compose también tiene valores de desarrollo predeterminados si se ejecuta sin crear `.env`.
+
+La aplicación Spring Boot queda disponible en `http://localhost:8080` y PostgreSQL en el puerto `5432`. PostgreSQL inicializa las tablas desde `database/init.sql` cuando crea por primera vez el volumen de datos.
+
+### Después de hacer cambios
+
+- **Cambios en el código Java o configuración incluida en la imagen:** reconstruir y levantar con `docker compose up --build`. Compose recrea el contenedor de la aplicación; el volumen de PostgreSQL se conserva.
+- **Cambios en `.env`:** ejecutar `docker compose up -d` para recrear los servicios con las nuevas variables. Si también cambió el código, usar `docker compose up --build`.
+- **Cambios en `database/init.sql`:** el script solo se ejecuta automáticamente cuando PostgreSQL inicializa un volumen vacío. Para aplicar cambios a una base existente, gestionar la migración o reinicializar el volumen en desarrollo.
+- **Detener el entorno conservando la base de datos:** `docker compose down`.
+- **Borrar también los datos de PostgreSQL:** `docker compose down -v` y luego `docker compose up --build`. Elimina permanentemente el volumen y todos sus datos; úsalo solo cuando quieras empezar con una base vacía.
+
+Los valores predeterminados son solo para desarrollo local. No guardar credenciales reales en el repositorio ni reutilizar esos valores fuera de este entorno.
 
 ## Compilación y ejecución
 
