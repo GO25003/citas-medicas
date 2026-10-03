@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -24,6 +25,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetails> handleBadRequest(BadRequestException exception,
                                                           HttpServletRequest request) {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorDetails> handleDataIntegrityViolation(DataIntegrityViolationException exception,
+                                                                       HttpServletRequest request) {
+        return buildResponse(HttpStatus.CONFLICT,
+                "La operación entra en conflicto con datos existentes o relacionados", request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

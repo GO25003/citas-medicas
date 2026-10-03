@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +31,15 @@ public class Disponibilidad {
     @JoinColumn(name = "id_medico", nullable = false)
     private Medico medico;
 
+    @Column(nullable = false)
     private LocalDate fecha;
+
+    @Column(nullable = false)
     private LocalTime horaInicio;
+
+    @Column(nullable = false)
     private LocalTime horaFin;
+
+    @Column(nullable = false)
     private boolean disponible = true;
 }

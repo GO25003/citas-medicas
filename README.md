@@ -91,20 +91,29 @@ mvn spring-boot:run
 
 ## Estado de la API
 
-Los controladores base y sus prefijos están creados, pero todavía no contienen métodos HTTP; por tanto, **ninguna ruta expone operaciones funcionales**. Las siguientes son las rutas previstas para la implementación:
+Los recursos administrativos de especialidades y disponibilidades ya tienen operaciones CRUD. Los demás controladores siguen pendientes de implementar; sus rutas planeadas son:
 
 | Método | Ruta | Propósito |
 |---|---|---|
+| `GET` | `/api/especialidades` | Listar especialidades. |
+| `GET` | `/api/especialidades/{id}` | Consultar una especialidad. |
+| `POST` | `/api/especialidades` | Registrar una especialidad. |
+| `PUT` | `/api/especialidades/{id}` | Actualizar una especialidad. |
+| `DELETE` | `/api/especialidades/{id}` | Eliminar una especialidad si no tiene referencias. |
+| `GET` | `/api/disponibilidades` | Listar disponibilidades. |
+| `GET` | `/api/disponibilidades/{id}` | Consultar una disponibilidad. |
+| `POST` | `/api/disponibilidades` | Registrar una disponibilidad para un médico existente. |
+| `PUT` | `/api/disponibilidades/{id}` | Actualizar una disponibilidad. |
+| `DELETE` | `/api/disponibilidades/{id}` | Eliminar una disponibilidad. |
 | `POST` | `/api/citas` | Crear una cita médica. |
 | `PATCH` | `/api/citas/{id}/estado` | Confirmar o cancelar una cita. |
 | `GET` | `/api/medicos/{id}/disponibilidad` | Consultar la disponibilidad de un médico. |
 | `POST` | `/api/medicos` | Registrar un médico. |
 | `POST` | `/api/pacientes` | Registrar un paciente. |
-| `POST` | `/api/especialidades` | Registrar una especialidad. |
 
 ## Estado de la plantilla
 
-El repositorio incluye esqueletos compilables de controladores, servicios, implementaciones de servicio, repositorios JPA, DTOs y mappers MapStruct. Los DTOs y mappers aún no definen campos ni conversiones, y los servicios todavía no aplican las reglas de negocio descritas arriba. Esta estructura permite que cada contribución se incorpore en su capa correspondiente sin redefinir la organización del proyecto.
+Los módulos de especialidades y disponibilidades ya incluyen entidades JPA, repositorios, DTOs validados, mappers MapStruct y operaciones CRUD en servicio y controlador. Los módulos de médico, paciente y cita conservan esqueletos; sus DTOs y mappers aún no definen campos ni conversiones, y sus servicios todavía no aplican las reglas de negocio descritas arriba. Esta estructura permite que cada contribución se incorpore en su capa correspondiente sin redefinir la organización del proyecto.
 
 ## Desarrollo
 
