@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@AttributeOverride(name = "idPersona", column = @Column(name = "id_paciente"))
 public class Paciente extends Persona {
 
     private LocalDate fechaNacimiento;
