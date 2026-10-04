@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,10 +22,23 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), request);
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorDetails> handleRouteNotFound(NoResourceFoundException exception,
+                                                             HttpServletRequest request) {
+        return buildResponse(HttpStatus.NOT_FOUND, "No existe una ruta para la solicitud", request);
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorDetails> handleBadRequest(BadRequestException exception,
                                                           HttpServletRequest request) {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorDetails> handleDataIntegrityViolation(DataIntegrityViolationException exception,
+                                                                       HttpServletRequest request) {
+        return buildResponse(HttpStatus.CONFLICT,
+                "La operación entra en conflicto con datos existentes o relacionados", request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

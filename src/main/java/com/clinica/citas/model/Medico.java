@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
@@ -19,14 +21,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@AttributeOverride(name = "idPersona", column = @Column(name = "id_medico"))
 public class Medico extends Persona {
 
     private String numeroColegiado;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "medico_especialidad",
-            joinColumns = @JoinColumn(name = "medico_id"),
-            inverseJoinColumns = @JoinColumn(name = "especialidad_id"))
+            joinColumns = @JoinColumn(name = "id_medico"),
+            inverseJoinColumns = @JoinColumn(name = "id_especialidad"))
     private List<Especialidad> especialidades = new ArrayList<>();
 
     @OneToMany(mappedBy = "medico", fetch = FetchType.LAZY)

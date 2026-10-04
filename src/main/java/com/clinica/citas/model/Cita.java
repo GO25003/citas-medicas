@@ -30,15 +30,15 @@ public class Cita {
     private Long idCita;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "medico_id", nullable = false)
+    @JoinColumn(name = "id_medico", nullable = false)
     private Medico medico;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "paciente_id", nullable = false)
+    @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "especialidad_id", nullable = false)
+    @JoinColumn(name = "id_especialidad", nullable = false)
     private Especialidad especialidadConsulta;
 
     @Column(nullable = false)
@@ -50,5 +50,6 @@ public class Cita {
     private String motivo;
 
     @Enumerated(EnumType.STRING)
-    private EstadoCita estado;
+    @Column(nullable = false)
+    private EstadoCita estado = EstadoCita.PENDIENTE;
 }
