@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,6 +20,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetails> handleNotFound(ResourceNotFoundException exception,
                                                         HttpServletRequest request) {
         return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), request);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorDetails> handleRouteNotFound(NoResourceFoundException exception,
+                                                             HttpServletRequest request) {
+        return buildResponse(HttpStatus.NOT_FOUND, "No existe una ruta para la solicitud", request);
     }
 
     @ExceptionHandler(BadRequestException.class)
