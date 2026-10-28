@@ -1,0 +1,3 @@
+import type { EstadoCita } from '../../types'
+const styles:Record<EstadoCita,string>={PENDIENTE:'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900',CONFIRMADA:'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-900',CANCELADA:'bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:ring-rose-900'}
+export function StatusBadge({status}:{status:EstadoCita}){return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${styles[status]}`}>{status==='PENDIENTE'?'Pendiente':status==='CONFIRMADA'?'Confirmada':'Cancelada'}</span>}
