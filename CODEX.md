@@ -72,7 +72,7 @@ Para compilar y ejecutar con Maven se requiere JDK 25 y una instancia PostgreSQL
 ./mvnw spring-boot:run
 ```
 
-El script SQL de inicialización solo corre al crear un volumen vacío. `docker compose down` conserva el volumen; `docker compose down -v` lo elimina junto con los datos.
+El script SQL de inicialización crea el esquema y carga datos de prueba (12 médicos, 12 pacientes, 6 especialidades, 12 disponibilidades y 12 citas) solo al crear un volumen vacío. Las citas usan fechas futuras y disponibilidades compatibles con las reglas del servicio. `docker compose down` conserva el volumen; `docker compose down -v` lo elimina junto con los datos y permite que el siguiente arranque vuelva a ejecutar el script.
 
 ## Convenciones de implementación
 
@@ -82,7 +82,7 @@ El script SQL de inicialización solo corre al crear un volumen vacío. `docker 
 - Validar los cuerpos de entrada con Jakarta Validation en DTOs y `@Valid` en los controladores.
 - Colocar reglas de negocio y coordinación entre repositorios en la capa Service; los controladores se limitan a HTTP.
 - Centralizar las respuestas de error en `GlobalExceptionHandler` y mantener el contrato `ErrorDetails`.
-- Mantener sincronizados el esquema `database/init.sql`, las entidades y los diagramas. Ante discrepancias, documentar la diferencia y evitar cambios estructurales no relacionados.
+- Mantener sincronizados el esquema y los datos iniciales de `database/init.sql`, las entidades y los diagramas. Ante discrepancias, documentar la diferencia y evitar cambios estructurales no relacionados.
 - No guardar credenciales reales ni incluir `.env` en Git.
 
 ## Antes de entregar cambios

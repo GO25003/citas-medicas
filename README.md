@@ -24,7 +24,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-La API queda en `http://localhost:8080` y PostgreSQL en `localhost:5432`. Compose espera a que la base de datos esté saludable antes de iniciar la aplicación. El script `database/init.sql` crea las tablas al inicializar un volumen PostgreSQL vacío; no se vuelve a ejecutar sobre un volumen existente.
+La API queda en `http://localhost:8080` y PostgreSQL en `localhost:5432`. Compose espera a que la base de datos esté saludable antes de iniciar la aplicación. El script `database/init.sql` crea las tablas y carga datos de prueba al inicializar un volumen PostgreSQL vacío (12 médicos, 12 pacientes, 6 especialidades, 12 disponibilidades y 12 citas); no se vuelve a ejecutar sobre un volumen existente. Para volver a cargar esos datos desde cero, ejecuta `docker compose down -v` y luego `docker compose up --build` (esto elimina los datos guardados en el volumen local).
 
 Los valores de `.env.example` son solo para desarrollo local. `.env` está excluido de Git. Para detener los servicios conservando los datos, ejecuta `docker compose down`. Para borrar también los datos locales y recrear la base vacía, ejecuta `docker compose down -v`.
 
