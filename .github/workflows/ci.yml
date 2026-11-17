@@ -1,0 +1,121 @@
+name: CI/CD local
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy_local:
+        description: Desplegar en el Kind local (solo mediante act)
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: citas_medicas
+          POSTGRES_USER: citas_user
+          POSTGRES_PASSWORD: ci_only_password
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U citas_user -d citas_medicas"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_URL: jdbc:postgresql://localhost:55432/citas_medicas
+      DB_USERNAME: citas_user
+      DB_PASSWORD: ci_only_password
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Verify PostgreSQL service port
+        run: timeout 5 bash -c '</dev/tcp/127.0.0.1/55432'
+      - name: Build and run JUnit tests
+        run: ./mvnw --batch-mode --no-transfer-progress verify
+
+  deploy:
+    name: Deploy to local Kind cluster
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_local == true
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: citas-medicas-kind-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Require the local ACT environment
+        run: |
+          set -euo pipefail
+          if [[ "${ACT:-}" != "true" ]]; then
+            echo "This deploy job is local-only. Run it with scripts/act-kind.sh; GitHub-hosted runners cannot reach the local Kind cluster."
+            exit 1
+          fi
+      - name: Verify local Kind and Docker access
+        run: |
+          set -euo pipefail
+          test "$(kubectl config current-context)" = "kind-citas-medicas"
+          kind get clusters | grep -Fx citas-medicas
+          kubectl get nodes
+          docker info >/dev/null
+      - name: Create namespace, credentials, and SQL ConfigMap
+        env:
+          SECRET_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
+          SECRET_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$SECRET_USERNAME" || { echo 'POSTGRES_USERNAME is missing from the local ACT secrets file'; exit 1; }
+          test -n "$SECRET_PASSWORD" || { echo 'POSTGRES_PASSWORD is missing from the local ACT secrets file'; exit 1; }
+          kubectl apply -f k8s/namespace.yaml
+          secret_dir="$(mktemp -d)"
+          trap 'rm -rf "$secret_dir"' EXIT
+          printf '%s' "$SECRET_USERNAME" > "$secret_dir/username"
+          printf '%s' "$SECRET_PASSWORD" > "$secret_dir/password"
+          kubectl create secret generic postgres-credentials \
+            --namespace citas-medicas \
+            --from-file=username="$secret_dir/username" \
+            --from-file=password="$secret_dir/password" \
+            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create configmap postgres-init \
+            --namespace citas-medicas \
+            --from-file=init.sql=database/init.sql \
+            --dry-run=client -o yaml | kubectl apply -f -
+      - name: Deploy PostgreSQL and wait for readiness
+        run: |
+          set -euo pipefail
+          kubectl apply -f k8s/postgres-pvc.yaml -f k8s/postgres-service.yaml -f k8s/postgres-deployment.yaml
+          kubectl rollout status deployment/postgres -n citas-medicas --timeout=180s
+          kubectl wait --for=condition=Ready pod -l app=postgres -n citas-medicas --timeout=180s
+      - name: Build and load the local application image
+        run: |
+          set -euo pipefail
+          docker build -t citas-medicas:local .
+          kind load docker-image citas-medicas:local --name citas-medicas
+      - name: Deploy the API and verify readiness
+        run: |
+          set -euo pipefail
+          kubectl apply -f k8s/app-service.yaml -f k8s/app-deployment.yaml
+          # Keep the manifest's required local tag and force the new image into a fresh Pod.
+          kubectl rollout restart deployment/citas-medicas -n citas-medicas
+          kubectl rollout status deployment/citas-medicas -n citas-medicas --timeout=300s
+          kubectl get deployments,pods,services -n citas-medicas
