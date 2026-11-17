@@ -16,6 +16,7 @@ application-local.yml
 application-local.yaml
 .env
 *.env
+.act.secrets
 
 # STS / Eclipse
 .apt_generated
