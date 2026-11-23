@@ -2,6 +2,7 @@ package com.clinica.citas.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.clinica.citas.dto.request.CitaRequestDTO;
 import com.clinica.citas.dto.response.CitaResponseDTO;
 import com.clinica.citas.service.CitaService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Punto de entrada REST para la gestión de citas. */
+@Tag(name = "Citas", description = "Gestión de citas médicas")
 @RestController
 @RequestMapping("/api/citas")
 public class CitaController {
