@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: citas-medicas
+  namespace: citas-medicas
+spec:
+  type: ClusterIP
+  selector:
+    app: citas-medicas
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
