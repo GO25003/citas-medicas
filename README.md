@@ -36,7 +36,7 @@ Las solicitudes utilizan DTOs con Bean Validation y los errores se traducen a re
 | Maven Wrapper (`./mvnw`, incluido) | Compilar y ejecutar pruebas; no hace falta Maven global |
 | Docker Engine y Docker Compose | Levantar la API y PostgreSQL |
 | Kind y `kubectl` | Despliegue en Kubernetes local |
-| `act` y `flock` (util-linux) | Pipeline local de CI/CD |
+| `act` y `flock` (util-linux) | Pipeline local de CI/CD (Linux o WSL2) |
 
 ## Variables de entorno
 
@@ -67,16 +67,7 @@ El script `database/init.sql` crea las tablas y carga datos de prueba al inicial
 - 12 disponibilidades.
 - 12 citas.
 
-El script no vuelve a ejecutarse sobre un volumen existente. Para volver a cargar esos datos desde cero, ejecuta:
-
-```bash
-docker compose down -v
-docker compose up --build
-```
-
-Esto elimina los datos guardados en el volumen local.
-
-Los valores de `.env.example` son solo para desarrollo local. El archivo `.env` está excluido de Git.
+El script no vuelve a ejecutarse sobre un volumen existente.
 
 Para detener los servicios conservando los datos:
 
@@ -84,11 +75,14 @@ Para detener los servicios conservando los datos:
 docker compose down
 ```
 
-Para borrar también los datos locales y recrear la base vacía:
+Para borrar también los datos locales y volver a cargar los datos iniciales desde cero:
 
 ```bash
 docker compose down -v
+docker compose up --build
 ```
+
+Esto elimina los datos guardados en el volumen local.
 
 ## Despliegue en Kubernetes
 
@@ -240,15 +234,15 @@ Para detener la aplicación y PostgreSQL y eliminar todos los recursos del names
 kubectl delete namespace citas-medicas
 ```
 
-El namespace y sus recursos se pueden volver a crear siguiendo estos pasos.
-
-El borrado del PVC elimina los datos persistidos del clúster.
+El borrado del PVC elimina los datos persistidos del clúster. El namespace y sus recursos se pueden volver a crear siguiendo estos pasos.
 
 ## CI/CD local con ACT
 
 El workflow `.github/workflows/ci.yml` conserva triggers compatibles con GitHub Actions para CI y ofrece el despliegue únicamente como job manual y local.
 
-No configura runners registrados ni intenta conectar GitHub con el clúster Kind de Fedora.
+No configura runners registrados ni intenta conectar GitHub con el clúster Kind local.
+
+> **Importante:** `scripts/act-kind.sh` es un script Bash. Solo se ejecuta en Linux o WSL2, no en PowerShell ni en CMD. El clúster Kind `citas-medicas` debe existir en la máquina donde se ejecuta.
 
 ### Requisitos y entorno
 
@@ -268,7 +262,7 @@ El clúster utilizado es `citas-medicas` y el contexto `kind-citas-medicas`.
 
 El script `scripts/act-kind.sh` valida esas condiciones.
 
-En Fedora/Linux, ACT utiliza `--network host`, lo que permite al runner alcanzar el API de Kind publicado en `127.0.0.1` y PostgreSQL de servicio publicado en `localhost:55432`.
+En Linux, ACT utiliza `--network host`, lo que permite al runner alcanzar el API de Kind publicado en `127.0.0.1` y PostgreSQL de servicio publicado en `localhost:55432`.
 
 Ese puerto evita conflictos con el puerto `5432` de Docker Compose.
 
@@ -328,7 +322,7 @@ Este job inicia PostgreSQL 17 Alpine con credenciales ficticias para CI, espera 
 
 ### Ejecutar el pipeline completo y desplegar en Kind
 
-Desde la raíz del repositorio:
+Desde la raíz del repositorio (en Linux o WSL2):
 
 ```bash
 ./scripts/act-kind.sh
