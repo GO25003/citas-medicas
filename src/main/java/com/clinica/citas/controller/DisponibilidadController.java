@@ -2,6 +2,7 @@ package com.clinica.citas.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.clinica.citas.dto.request.DisponibilidadRequestDTO;
 import com.clinica.citas.dto.response.DisponibilidadResponseDTO;
 import com.clinica.citas.service.DisponibilidadService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Disponibilidades", description = "Gestión de disponibilidad de médicos")
 @RestController
 @RequestMapping("/api/disponibilidades")
 public class DisponibilidadController {

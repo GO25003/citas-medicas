@@ -2,6 +2,7 @@ package com.clinica.citas.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.clinica.citas.dto.request.MedicoRequestDTO;
 import com.clinica.citas.dto.response.MedicoResponseDTO;
 import com.clinica.citas.service.MedicoService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Punto de entrada REST para la gestión de médicos. */
+@Tag(name = "Médicos", description = "Gestión de médicos")
 @RestController
 @RequestMapping("/api/medicos")
 public class MedicoController {
